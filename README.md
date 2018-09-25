@@ -1,3 +1,3 @@
 # Leetcode
 
-# record the probles solved
+# record the solved problems
