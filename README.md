@@ -1,3 +1,3 @@
-# GitHub
+# Leetcode
 
-# 136, dic.get()
+# record the probles solved
