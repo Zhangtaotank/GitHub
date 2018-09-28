@@ -1,0 +1,93 @@
+Write a SQL query to get the nth highest salary from the Employee table.
+
++----+--------+
+| Id | Salary |
++----+--------+
+| 1  | 100    |
+| 2  | 200    |
+| 3  | 300    |
++----+--------+
+For example, given the above Employee table, the nth highest salary where n = 2 is 200. If there is no nth highest salary, then the query should return null.
+
++------------------------+
+| getNthHighestSalary(2) |
++------------------------+
+| 200                    |
++------------------------+
+
+MYSql, there is no rank() or dense_rank() fucntion.
+Method 1: limit(start, number of records) 
+--------------------------------------------------------------------------------------------------------------------------------
+Function used:   declare
+                 limit() M-1, 1
+  
+CREATE FUNCTION getNthHighestSalary(N INT) RETURNS INT
+BEGIN
+declare M int default N - 1;
+RETURN (
+      # Write your MySQL query statement below.
+      select distinct salary from employee order by salary desc limit M, 1
+  );
+END
+
+
+Method 2:(MS SQL Server )
+---------------------------------------------------------------------------------------------------------------------------------
+CREATE FUNCTION getNthHighestSalary(@N INT) RETURNS INT as 
+BEGIN
+     RETURN (
+         SELECT MAX(Salary)
+         FROM (
+         SELECT Salary, DENSE_RANK() OVER (ORDER BY Salary DESC) AS Rnk
+         FROM Employee) TMP
+         WHERE TMP.Rnk = @N
+     );
+END;
+
+
+
+
+Mysql rank function example:
+-------------------------------------------------------------------------------------------------------------------------------------
+CREATE TABLE person (id int, first_name varchar(20), age int, gender char(1));
+
+INSERT INTO person VALUES (1, 'Bob', 25, 'M');
+INSERT INTO person VALUES (2, 'Jane', 20, 'F');
+INSERT INTO person VALUES (3, 'Jack', 30, 'M');
+INSERT INTO person VALUES (4, 'Bill', 32, 'M');
+INSERT INTO person VALUES (5, 'Nick', 22, 'M');
+INSERT INTO person VALUES (6, 'Kathy', 18, 'F');
+INSERT INTO person VALUES (7, 'Steve', 36, 'M');
+INSERT INTO person VALUES (8, 'Anne', 25, 'F');
+
+
+--------------------------------------------
+SELECT    first_name,
+          age,
+          gender,
+          @curRank := @curRank + 1 AS rank
+FROM      person p, (SELECT @curRank := 0) r    #The (SELECT @curRank := 0) part allows the variable initialization without requiring a separate SET command.
+ORDER BY  age;
+----------------------------------------------
+
+Result:
++------------+------+--------+------+
+| first_name | age  | gender | rank |
++------------+------+--------+------+
+| Kathy      |   18 | F      |    1 |
+| Jane       |   20 | F      |    2 |
+| Nick       |   22 | M      |    3 |
+| Bob        |   25 | M      |    4 |
+| Anne       |   25 | F      |    5 |
+| Jack       |   30 | M      |    6 |
+| Bill       |   32 | M      |    7 |
+| Steve      |   36 | M      |    8 |
++------------+------+--------+------+
+8 rows in set (0.02 sec)
+
+
+
+
+
+Dense rank(1,1,2,3,4) vs rank(1,1,3,4,5)
+---------------------------------------------------------------------------------------------------------------------------------
