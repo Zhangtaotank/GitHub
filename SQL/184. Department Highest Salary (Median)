@@ -38,10 +38,31 @@ select Department, Employee, Salary from
         on e.departmentid = d.id) as ts
 where ts.rank=1
 
+1187 ms
 
 
-MYSQl: no rank function
+MYSQl: no rank function.
+"pair where" to choose the highest ones. 
 --------------------------------------------------------------------------------------------------------------------------------
+select d.name as Department, e.name as Employee, Salary
+from employee e inner join department d on e.departmentid = d.id
+where (e.departmentid, e.salary) in
+    (select departmentid, max(salary) from employee group by departmentid);
+
+338 ms
+
+
+Mysql
+--------------------------------------------------------------------------------------------------------------------------------
+select b.Name as Department, a.name as Employee, a.Salary as Salary
+from (select e1.* 
+      from Employee as e1
+      where (select count(*) from Employee as e2 where e2.DepartmentId = e1.DepartmentId and e1.Salary < e2.Salary) < 1) as a,Department as b
+where a.DepartmentId = b.Id
+
+
+
+
 
 
 
