@@ -34,4 +34,20 @@ select (case
 from seat, (select count(*) as counts from seat) as noth
 order by id asc;
 
-# method
+# method 2
+select a.id, case when b.student is not null then b.student else a.student end as student
+from seat as a left join seat as b
+on a.id = (case
+                when b.id %2 = 0 then b.id -1
+                when b.id %2 != 0 then b.id + 1
+          end)
+order by a.id asc;
+
+# With some bugs version:
+select a.id, b.student as student
+from seat as a left join seat as b
+on a.id = (case
+                when b.id %2 = 0 then b.id -1
+                when b.id %2 != 0 then b.id + 1
+          end) as b.id
+order by a.id asc;
